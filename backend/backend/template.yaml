@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: CapitalOneWise - Add Expense Function
+
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: python3.11
+    MemorySize: 128
+
+Resources:
+
+  AddExpenseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: AddExpenseFunction
+      Handler: app.lambda_handler
+      CodeUri: hello_world/
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ExpensesTable
+      Environment:
+        Variables:
+          EXPENSES_TABLE: !Ref ExpensesTable
+      Events:
+        AddExpenseApi:
+          Type: Api
+          Properties:
+            Path: /add-expense
+            Method: post
+
+  ExpensesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ExpensesTable
+      AttributeDefinitions:
+        - AttributeName: expense_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: expense_id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+Outputs:
+  AddExpenseFunction:
+    Description: "Add Expense Lambda Function"
+    Value: !GetAtt AddExpenseFunction.Arn
+
+  AddExpenseApiEndpoint:
+    Description: "API Gateway endpoint for Add Expense"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/add-expense"
