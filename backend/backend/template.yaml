@@ -41,6 +41,69 @@ Resources:
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
 
+  BudgetsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: BudgetsTable
+      AttributeDefinitions:
+        - AttributeName: user_id
+          AttributeType: S
+        - AttributeName: category
+          AttributeType: S
+      KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        - AttributeName: category
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+
+  AddBudgetFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: AddBudgetFunction
+      Handler: add_budget.lambda_handler
+      CodeUri: hello_world/
+      Runtime: python3.11
+      Timeout: 10
+      MemorySize: 128
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref BudgetsTable
+      Environment:
+        Variables:
+          BUDGETS_TABLE: !Ref BudgetsTable
+      Events:
+        AddBudgetApi:
+          Type: Api
+          Properties:
+            Path: /add-budget
+            Method: post
+  OverspendAlertsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: OverspendAlerts
+
+  CheckBudgetsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CheckBudgetsFunction
+      Handler: check_budget.lambda_handler
+      CodeUri: hello_world/
+      Runtime: python3.11
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ExpensesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref BudgetsTable
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt OverspendAlertsTopic.TopicName
+      Environment:
+        Variables:
+          EXPENSES_TABLE: !Ref ExpensesTable
+          BUDGETS_TABLE: !Ref BudgetsTable
+          SNS_TOPIC_ARN: !Ref OverspendAlertsTopic
+
+
 Outputs:
   AddExpenseFunction:
     Description: "Add Expense Lambda Function"
