@@ -102,7 +102,12 @@ Resources:
           EXPENSES_TABLE: !Ref ExpensesTable
           BUDGETS_TABLE: !Ref BudgetsTable
           SNS_TOPIC_ARN: !Ref OverspendAlertsTopic
-
+      Events:
+        WeeklyBudgetCheck:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 8 ? * 1 *)
+            Name: WeeklyBudgetCheckRule
 
 Outputs:
   AddExpenseFunction:
