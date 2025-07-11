@@ -11,7 +11,7 @@ CapitalOneWise is a serverless financial microservice built on AWS, designed as 
 
 ## 🏗️ Architecture
 
-![Backend Architecture](Backend Architecture.png)
+![Backend Architecture](Backend%20Architecture.png)
 
 **Components:**
 - **API Gateway**: Exposes two REST endpoints: `/add-expense` and `/add-budget`
