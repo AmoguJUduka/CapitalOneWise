@@ -92,12 +92,27 @@ aws sns subscribe \
 
 ```
 backend/
-├── hello_world/
-│   ├── app.py               # Add expense logic
-│   ├── add_budget.py        # Add budget logic
-│   ├── check_budget.py      # Weekly budget checker + SNS
-├── template.yaml            # SAM template defining infrastructure
 ├── README.md
+├── __init__.py
+├── events
+│   └── event.json
+├── hello_world
+│   ├── __init__.py
+│   ├── add_budget.py     # Add budget logic
+│   ├── app.py            # Add expense logic
+│   ├── check_budget.py   # Weekly budget checker + SNS
+│   └── requirements.txt
+├── samconfig.toml        # Store configuration defaults for sam cli
+├── template.yaml         # Defines infrasturcture for the serverless application
+└── tests
+    ├── __init__.py
+    ├── integration
+    │   ├── __init__.py
+    │   └── test_api_gateway.py
+    ├── requirements.txt
+    └── unit
+        ├── __init__.py
+        └── test_handler.py
 ```
 
 ---
